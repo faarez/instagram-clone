@@ -1,7 +1,8 @@
-import {useState} from 'react'
+import {useState,useEffect} from 'react'
 import './App.css';
 import Header from './components/header/Header.js'
 import Post from './components/post/Post.js'
+import {db} from './firebase.js'
 function App() {
   const [posts, setPosts] = useState([
     {
@@ -18,6 +19,11 @@ function App() {
     },
   ]);
 
+  useEffect(() => {
+   db.collection('posts').onSnapshot(snapshot =>{
+     setPosts(snapshot.docs.map(doc => doc.data()));
+   })
+  }, [])
   return (
     <div className="app">
       <Header />

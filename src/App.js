@@ -2,7 +2,7 @@ import {useState,useEffect} from 'react'
 import './App.css';
 import Header from './components/header/Header.js'
 import Post from './components/post/Post.js'
-import {db} from './firebase.js'
+import {db,auth} from './firebase.js'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
@@ -17,6 +17,7 @@ function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [user, setUser] = useState(null);
 
 function getModalStyle() {
   const top = 50;
@@ -47,6 +48,34 @@ const useStyles = makeStyles((theme) => ({
   const handleClose = () => {
     setOpen(false);
   };
+  const signUp = (e)=>{
+    e.preventDefault();
+    auth.createUserWithEmailAndPassword(email,password)   
+    .catch((error)=> alert(error.message))
+  }
+  
+  
+  useEffect(() => {
+   const unsubscribe = auth.onAuthStateChanged((authUser) =>{
+     if(authUser){
+       console.log(authUser);
+       setUser(authUser);
+       if(authUser.displayName){
+
+       }else{
+         return authUser.updateProfile({
+           displayName:username,
+         })
+       }
+     }else{
+       setUser(null)
+     }
+   });
+   return  () =>{
+     unsubscribe();
+   }
+  }, [user,username])
+  
   useEffect(() => {
    db.collection('posts').onSnapshot(snapshot =>{
      setPosts(snapshot.docs.map(doc => (
@@ -58,10 +87,12 @@ const useStyles = makeStyles((theme) => ({
    })
   }, []);
 
+
+
   return (
     <div className="app">
       <Header />
-     <Button onClick={()=> setOpen(true)}>Sign up</Button>
+     {user ? <Button onClick={()=> auth.signOut()}>logout</Button> : <Button onClick={()=> setOpen(true)}>Sign up</Button>}
    <Modal
         open={open}
         onClose={handleClose}
@@ -85,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
     <Input type="text" className="custom-input" placeholder="username" value={username} onChange={(e)=> setUsername(e.target.value)}/>
     <Input type="email" className="custom-input" placeholder="email" value={email} onChange={(e)=> setEmail(e.target.value)}/>
     <Input type="password" className="custom-input" placeholder="Password" value={password} onChange={(e)=> setPassword(e.target.value)}/>
-    <Button className="custom-btn">Sign Up</Button>
+    <Button type="submit" onClick={signUp} className="custom-btn">Sign Up</Button>
     
         </form>
     </div>

@@ -16,6 +16,7 @@ function App() {
   const [open, setOpen] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [openSignin, setOpenSignin] = useState(false);
   const [email, setEmail] = useState('');
   const [user, setUser] = useState(null);
 
@@ -52,6 +53,13 @@ const useStyles = makeStyles((theme) => ({
     e.preventDefault();
     auth.createUserWithEmailAndPassword(email,password)   
     .catch((error)=> alert(error.message))
+  }
+  const signIn = (e)=>{
+    e.preventDefault();
+    auth.signInWithEmailAndPassword(email,password)
+    .catch(error => alert(error.message));
+
+    setOpenSignin(false);
   }
   
   
@@ -92,7 +100,13 @@ const useStyles = makeStyles((theme) => ({
   return (
     <div className="app">
       <Header />
-     {user ? <Button onClick={()=> auth.signOut()}>logout</Button> : <Button onClick={()=> setOpen(true)}>Sign up</Button>}
+     {user ?( <Button onClick={()=> auth.signOut()}>logout</Button> ): (
+       <div className="app_loginContainer">
+       <Button onClick={()=> setOpenSignin(true)}>Sign in</Button>
+       <Button onClick={()=> setOpen(true)}>Sign up</Button>
+       </div>
+
+     )}
    <Modal
         open={open}
         onClose={handleClose}
@@ -122,7 +136,34 @@ const useStyles = makeStyles((theme) => ({
     </div>
 }
       </Modal>
+   <Modal
+        open={openSignin}
+        onClose={handleClose}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        {    <div style={modalStyle} className={classes.paper}>
+        
+        
+                <form className="app__signup">
+    <center>
+       <img
+        src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
+        className="app__headerImage"
+        alt="our logo"
+      />
+    
+    </center>
 
+
+    <Input type="email" className="custom-input" placeholder="email" value={email} onChange={(e)=> setEmail(e.target.value)}/>
+    <Input type="password" className="custom-input" placeholder="Password" value={password} onChange={(e)=> setPassword(e.target.value)}/>
+    <Button type="submit" onClick={signIn} className="custom-btn">Sign in</Button>
+    
+        </form>
+    </div>
+}
+      </Modal>
       {posts.map(({ id, post }) => (
         <Post
           key={id}

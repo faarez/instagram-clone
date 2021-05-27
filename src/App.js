@@ -104,16 +104,26 @@ const useStyles = makeStyles((theme) => ({
 
   return (
     <div className="app">
-      {user?.displayName  ? <ImageUpload username={user.displayName} /> : <h3>login upload </h3>}
-      <Header />
-      {user ? (
-        <Button onClick={() => auth.signOut()}>logout</Button>
+      {user?.displayName ? (
+        <ImageUpload username={user.displayName} />
       ) : (
-        <div className="app_loginContainer">
-          <Button onClick={() => setOpenSignin(true)}>Sign in</Button>
-          <Button onClick={() => setOpen(true)}>Sign up</Button>
+        <div className="error" onClick={() => setOpenSignin(true)}>
+          <h3>login please login to upload </h3>
         </div>
       )}
+      <Header
+        loginContainer={
+          user ? (
+            <Button onClick={() => auth.signOut()}>logout</Button>
+          ) : (
+            <div className="app_loginContainer">
+              <Button onClick={() => setOpenSignin(true)}>Sign in</Button>
+              <Button onClick={() => setOpen(true)}>Sign up</Button>
+            </div>
+          )
+        }
+      />
+
       <Modal
         open={open}
         onClose={handleClose}
@@ -197,14 +207,16 @@ const useStyles = makeStyles((theme) => ({
           </div>
         }
       </Modal>
-      {posts.map(({ id, post }) => (
-        <Post
-          key={id}
-          username={post.username}
-          imageUrl={post.imageUrl}
-          caption={post.caption}
-        />
-      ))}
+      <div className="app__posts">
+        {posts.map(({ id, post }) => (
+          <Post
+            key={id}
+            username={post.username}
+            imageUrl={post.imageUrl}
+            caption={post.caption}
+          />
+        ))}
+      </div>
       {/* <Post username="ezekiel" caption="i am back guys" imageUrl="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg" />
       <Post username="dani" caption="my new vlog is out" imageUrl="https://helpx.adobe.com/content/dam/help/en/photoshop/using/convert-color-image-black-white/jcr_content/main-pars/before_and_after/image-before/Landscape-Color.jpg" />
       <Post username="hasham" caption="this my first post" imageUrl="https://images.ctfassets.net/hrltx12pl8hq/7yQR5uJhwEkRfjwMFJ7bUK/dc52a0913e8ff8b5c276177890eb0129/offset_comp_772626-opt.jpg?fit=fill&w=800&h=300" /> */}

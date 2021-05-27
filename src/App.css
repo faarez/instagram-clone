@@ -5,13 +5,6 @@
   background-color:#fafafa;
 
 }
-.app__header {
-  background-color:white;
-  padding:20px;
-  border-bottom:1px solid lightgrey;
-
-  object-fit:contain;
-}
 
 .app__signup{
   display:flex;
@@ -26,4 +19,10 @@
 }
 .custom-input{
   margin-top:30px;
+}
+.error{
+    background-color: rgb(211, 11, 11);
+    color: #fff;
+    padding:30px 0;
+    text-align: center;
 }

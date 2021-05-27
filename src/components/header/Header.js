@@ -1,4 +1,6 @@
-const Header = () => {
+import  './Header.css';
+
+const Header = ({ loginContainer }) => {
   return (
     <div className="app__header">
       <img
@@ -6,6 +8,8 @@ const Header = () => {
         className="app__headerImage"
         alt="our logo"
       />
+
+      {loginContainer}
     </div>
   );
 };

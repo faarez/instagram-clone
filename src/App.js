@@ -7,6 +7,7 @@ import {db,auth} from './firebase.js'
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import {Button,Input} from '@material-ui/core'
+import ImageUpload from './components/imageUpload/ImageUpload'
 function App() {
   const [posts, setPosts] = useState([
    
@@ -49,6 +50,10 @@ const useStyles = makeStyles((theme) => ({
   const handleClose = () => {
     setOpen(false);
   };
+
+  const handleSigninClose = () => {
+    setOpenSignin(false);
+  };
   const signUp = (e)=>{
     e.preventDefault();
     auth.createUserWithEmailAndPassword(email,password)   
@@ -85,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
   }, [user,username])
   
   useEffect(() => {
-   db.collection('posts').onSnapshot(snapshot =>{
+   db.collection('posts').orderBy('timestamp','desc').onSnapshot(snapshot =>{
      setPosts(snapshot.docs.map(doc => (
        {
          id:doc.id,
@@ -99,70 +104,98 @@ const useStyles = makeStyles((theme) => ({
 
   return (
     <div className="app">
+      {user?.displayName  ? <ImageUpload username={user.displayName} /> : <h3>login upload </h3>}
       <Header />
-     {user ?( <Button onClick={()=> auth.signOut()}>logout</Button> ): (
-       <div className="app_loginContainer">
-       <Button onClick={()=> setOpenSignin(true)}>Sign in</Button>
-       <Button onClick={()=> setOpen(true)}>Sign up</Button>
-       </div>
-
-     )}
-   <Modal
+      {user ? (
+        <Button onClick={() => auth.signOut()}>logout</Button>
+      ) : (
+        <div className="app_loginContainer">
+          <Button onClick={() => setOpenSignin(true)}>Sign in</Button>
+          <Button onClick={() => setOpen(true)}>Sign up</Button>
+        </div>
+      )}
+      <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
-        {    <div style={modalStyle} className={classes.paper}>
-        
-        
-                <form className="app__signup">
-    <center>
-       <img
-        src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
-        className="app__headerImage"
-        alt="our logo"
-      />
-    
-    </center>
+        {
+          <div style={modalStyle} className={classes.paper}>
+            <form className="app__signup">
+              <center>
+                <img
+                  src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
+                  className="app__headerImage"
+                  alt="our logo"
+                />
+              </center>
 
-
-    <Input type="text" className="custom-input" placeholder="username" value={username} onChange={(e)=> setUsername(e.target.value)}/>
-    <Input type="email" className="custom-input" placeholder="email" value={email} onChange={(e)=> setEmail(e.target.value)}/>
-    <Input type="password" className="custom-input" placeholder="Password" value={password} onChange={(e)=> setPassword(e.target.value)}/>
-    <Button type="submit" onClick={signUp} className="custom-btn">Sign Up</Button>
-    
-        </form>
-    </div>
-}
+              <Input
+                type="text"
+                className="custom-input"
+                placeholder="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <Input
+                type="email"
+                className="custom-input"
+                placeholder="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <Input
+                type="password"
+                className="custom-input"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <Button type="submit" onClick={signUp} className="custom-btn">
+                Sign Up
+              </Button>
+            </form>
+          </div>
+        }
       </Modal>
-   <Modal
+      <Modal
         open={openSignin}
-        onClose={handleClose}
+        onClose={handleSigninClose}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
-        {    <div style={modalStyle} className={classes.paper}>
-        
-        
-                <form className="app__signup">
-    <center>
-       <img
-        src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
-        className="app__headerImage"
-        alt="our logo"
-      />
-    
-    </center>
+        {
+          <div style={modalStyle} className={classes.paper}>
+            <form className="app__signup">
+              <center>
+                <img
+                  src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
+                  className="app__headerImage"
+                  alt="our logo"
+                />
+              </center>
 
-
-    <Input type="email" className="custom-input" placeholder="email" value={email} onChange={(e)=> setEmail(e.target.value)}/>
-    <Input type="password" className="custom-input" placeholder="Password" value={password} onChange={(e)=> setPassword(e.target.value)}/>
-    <Button type="submit" onClick={signIn} className="custom-btn">Sign in</Button>
-    
-        </form>
-    </div>
-}
+              <Input
+                type="email"
+                className="custom-input"
+                placeholder="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <Input
+                type="password"
+                className="custom-input"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <Button type="submit" onClick={signIn} className="custom-btn">
+                Sign in
+              </Button>
+            </form>
+          </div>
+        }
       </Modal>
       {posts.map(({ id, post }) => (
         <Post

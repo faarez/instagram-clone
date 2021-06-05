@@ -105,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
   return (
     <div className="app">
       {user?.displayName ? (
-        <ImageUpload username={user.displayName} />
+        <ImageUpload username={user.displayName}/>
       ) : (
         <div className="error" onClick={() => setOpenSignin(true)}>
           <h3>login please login to upload </h3>
@@ -211,6 +211,7 @@ const useStyles = makeStyles((theme) => ({
         {posts.map(({ id, post }) => (
           <Post
             key={id}
+            postId={id}
             username={post.username}
             imageUrl={post.imageUrl}
             caption={post.caption}
